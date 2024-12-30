@@ -1,0 +1,4 @@
+findOne
+findAll
+findMany
+findAndRemove...
