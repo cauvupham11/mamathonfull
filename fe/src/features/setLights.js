@@ -5,8 +5,8 @@ export const setUpLights = (scene) => {
   directionalLight.position.set(10, 20, 10);
   directionalLight.castShadow = true;
 
-  directionalLight.shadow.mapSize.width = 1024;
-  directionalLight.shadow.mapSize.height = 1024;
+  directionalLight.shadow.mapSize.width = 2048;
+  directionalLight.shadow.mapSize.height = 2048;
 
   directionalLight.shadow.camera.left = -50;
   directionalLight.shadow.camera.right = 50;
