@@ -1,39 +1,40 @@
-const { sendResponse, AppError } = require("./helpers/utils.js");
 require("dotenv").config();
+
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+
+const indexRouter = require("../be/src/routes/index");
+const usersRouter = require("../be/src/routes/users");
+const authRouter = require("../be/src/routes/");
+const walletRouter = require("../be/src/routes/wallet");
 const cors = require("cors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-
-var app = express();
-
+const app = express();
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, "public")));
+
+const mongoose = require("mongoose");
+const { sendResponse, AppError } = require("./src/helpers/utils");
+const mongoURI = process.env.MONGODB_URI;
+mongoose
+  .connect(mongoURI)
+  .then(() => console.log(`connected to ${mongoURI}`))
+  .catch((err) => console.log(err));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-const mongoose = require("mongoose");
-/* DB connection*/
-const mongoURI = process.env.MONGODB_URI;
+app.use("/auth", authRouter);
+app.use("/wallet", walletRouter);
 
-mongoose
-  .connect(mongoURI)
-  .then(() => console.log(`DB connected ${mongoURI}`))
-  .catch((err) => console.log(err));
-// catch 404 and forard to error handler
 app.use((req, res, next) => {
-  const err = new AppError(404, "Not Found", "Bad Request");
+  const err = new AppError(404, "Not Found");
   next(err);
 });
-/* Initialize Error Handling */
+
 app.use((err, req, res, next) => {
   console.log("ERROR", err);
   return sendResponse(

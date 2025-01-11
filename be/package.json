@@ -7,13 +7,19 @@
     "dev": "nodemon ./bin/www"
   },
   "dependencies": {
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
     "dotenv": "^16.4.7",
     "express": "~4.16.1",
-    "mongoose": "^8.9.2",
+    "mongoose": "^8.9.4",
     "morgan": "~1.9.1",
+    "web3": "^4.16.0",
+    "world-engine": "^0.0.1"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.9"
   }
 }
