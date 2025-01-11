@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { sendWalletToBackend } from "../services/wallet/sentToBackend";
+import { toast } from "react-toastify";
 
-const WalletConnect = () => {
+const WalletConnecting = ({ onConnectSuccess }) => {
   const [walletAddress, setWalletAddress] = useState("");
   const [signature, setSignature] = useState("");
   const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const connectWallet = async () => {
     if (!window.keplr) {
-      alert("Keplr Wallet chưa được cài đặt. Vui lòng cài đặt!");
+      toast.error("Keplr Wallet chưa được cài đặt. Vui lòng cài đặt!");
       return;
     }
 
@@ -32,32 +34,53 @@ const WalletConnect = () => {
         setWalletAddress(walletAddress);
         setSignature(signature.signature);
         setConnected(true);
+
+        // Hiển thị thông báo thành công
+        toast.success("Kết nối ví thành công!");
       }
     } catch (error) {
       console.error("Lỗi khi kết nối ví:", error);
+      toast.error("Lỗi khi kết nối ví!");
     }
   };
 
   const handleSendToBackend = async () => {
     try {
-      const response = await sendWalletToBackend(walletAddress, signature);
-      alert(`Kết nối thành công! Server trả về: ${response.message}`);
+      setLoading(true);
+      await sendWalletToBackend(walletAddress, signature);
+      setLoading(false);
+
+      // Hiển thị thông báo thành công
+      toast.success("Gửi ví tới backend thành công!");
+
+      if (onConnectSuccess) onConnectSuccess();
     } catch (error) {
-      alert(`Lỗi: ${error.message || "Không thể kết nối ví"}`);
+      setLoading(false);
+      toast.error(`Lỗi: ${error.message || "Không thể gửi ví tới backend"}`);
     }
   };
 
   return (
     <div>
-      <h1>Kết nối ví Celestia</h1>
-      <button onClick={connectWallet}>
+      <button
+        className="px-4 py-2 bg-purple-500 text-white rounded-lg shadow-md hover:bg-purple-600"
+        onClick={connectWallet}
+        disabled={loading}
+      >
         {connected ? `Đã kết nối: ${walletAddress}` : "Kết nối ví"}
       </button>
+
       {connected && (
-        <button onClick={handleSendToBackend}>Gửi ví tới backend</button>
+        <button
+          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600"
+          onClick={handleSendToBackend}
+          disabled={loading}
+        >
+          {loading ? "Đang xử lý..." : "Gửi ví tới backend"}
+        </button>
       )}
     </div>
   );
 };
 
-export default WalletConnect;
+export default WalletConnecting;
