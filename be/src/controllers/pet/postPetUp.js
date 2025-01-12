@@ -1,4 +1,4 @@
-const Pet = require('../../models/Pet');
+const Pet = require('../../models/pet');
 const utilsHelper = require('../../helpers/utilsHelper');
 
 async function postPetUp(req, res) {
@@ -11,9 +11,9 @@ async function postPetUp(req, res) {
         }
 
         const requiredExp = pet.level * 100;
-        if (pet.exp >= requiredExp) {
+        if (pet.Exp >= requiredExp) {
             pet.level += 1;
-            pet.exp -= requiredExp;
+            pet.Exp -= requiredExp;
             await pet.save();
             return utilsHelper.sendResponse(res, 200, true, pet, null, 'Pet leveled up');
         } else {

@@ -18,7 +18,7 @@ async function buyHouse(req, res, next) {
         if (!house) {
             return next(new AppError(404, 'House not found in marketplace', 'HouseError'));
         }
-        
+
         const result = await buyHouseFromMarketplace(userId, houseId);
         if (result.success) {
             return sendResponse(res, 200, true, { house: result.house }, null, 'House purchased successfully');
