@@ -4,13 +4,13 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const IntroPage = () => {
-  const [isConnected, setIsConnected] = useState(false); // Kiểm tra trạng thái kết nối ví
-  const [hasStarted, setHasStarted] = useState(false); // Kiểm tra trạng thái bắt đầu
+  const [isConnected, setIsConnected] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
   const handleConnectionSuccess = () => {
-    setIsConnected(true); // Đánh dấu ví đã được kết nối
+    setIsConnected(true);
   };
 
   const handleStart = () => {
@@ -20,7 +20,6 @@ const IntroPage = () => {
       audioRef.current.play();
     }
 
-    // Hiển thị thông báo khi bắt đầu
     toast.success("Bắt đầu thành công!");
   };
 
@@ -28,10 +27,8 @@ const IntroPage = () => {
     <div className="relative h-screen w-screen bg-black overflow-hidden">
       <ToastContainer />
       {!isConnected ? (
-        // Hiển thị component WalletConnecting nếu chưa kết nối ví
         <WalletConnecting onConnectSuccess={handleConnectionSuccess} />
       ) : !hasStarted ? (
-        // Hiển thị nút "Bắt đầu" khi ví đã được kết nối
         <div className="flex items-center justify-center h-full">
           <button
             className="px-6 py-3 bg-purple-500 text-white text-xl rounded shadow-lg hover:bg-purple-600"
@@ -41,7 +38,6 @@ const IntroPage = () => {
           </button>
         </div>
       ) : (
-        // Hiển thị video và audio khi nhấn nút "Bắt đầu"
         <>
           <video
             ref={videoRef}
