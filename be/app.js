@@ -9,6 +9,10 @@ const indexRouter = require("../be/src/routes/index");
 const usersRouter = require("../be/src/routes/users");
 const authRouter = require("../be/src/routes/");
 const walletRouter = require("../be/src/routes/wallet");
+const houseRouter = require("../be/src/routes/house");
+const petRouter = require("../be/src/routes/pet");
+
+
 const cors = require("cors");
 const app = express();
 app.use(cors());
