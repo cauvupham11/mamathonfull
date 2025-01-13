@@ -1,9 +1,8 @@
 var express = require("express");
+const getInforUser = require("../controllers/User/getUserInfor");
 var router = express.Router();
 
 /* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
+router.get("/:walletAddress", getInforUser);
 
 module.exports = router;

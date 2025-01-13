@@ -33,9 +33,6 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/wallet", walletRouter);
-app.use("/house", houseRouter);
-app.use("/pet", petRouter);
-
 
 app.use((req, res, next) => {
   const err = new AppError(404, "Not Found");
