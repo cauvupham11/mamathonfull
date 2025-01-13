@@ -28,7 +28,7 @@ mongoose
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/auth", authRouter);
-app.use("/wallet", walletRouter);
+app.use("/wallets", walletRouter);
 
 app.use((req, res, next) => {
   const err = new AppError(404, "Not Found");
