@@ -6,6 +6,7 @@ import { createCity } from "../features/city.js";
 import { createCamera } from "../features/camera.js";
 import { createGame } from "../features/game.js";
 import { setUpLights } from "../features/setLights.js";
+import MainBoundary from "../components/MainBoundary.jsx";
 
 const HomePage = () => {
   const mountRef = useRef(null);
@@ -135,7 +136,7 @@ const HomePage = () => {
     }
   };
 
-  return <div ref={mountRef} />;
+  return <div ref={mountRef}></div>;
 };
 
 export default HomePage;
