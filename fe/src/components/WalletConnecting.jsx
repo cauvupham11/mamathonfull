@@ -1,127 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { sendToBackend } from "../services/wallet/sentToBackend";
-import { checkWallet } from "../services/wallet/CheckWallet";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import "../css/WalletConnecting.css"; // Import CSS
+import { sendWalletToBackend } from "../services/wallet/SendToBackend";
+import { checkWallet } from "../services/wallet/CheckWallet";
 
-const addMochaChain = async () => {
-  if (!window.keplr) {
-    toast.error("Keplr Wallet chưa được cài đặt. Vui lòng cài đặt!");
-    return;
-  }
-  try {
-    await window.keplr.experimentalSuggestChain({
-      chainId: "mocha-4", // Thay đổi ID chain thành mocha-4
-      chainName: "Mocha Testnet 4", // Tên chain
-      rpc: "https://rpc.mocha-4.testnet.com", // Thay bằng URL RPC thực tế
-      rest: "https://rest.mocha-4.testnet.com", // Thay bằng URL REST thực tế
-      bip44: {
-        coinType: 118,
-      },
-      coinType: 118,
-      stakeCurrency: {
-        coinDenom: "MOCHA",
-        coinMinimalDenom: "umocha",
-        coinDecimals: 6,
-      },
-      bech32Config: {
-        bech32PrefixAccAddr: "mocha",
-        bech32PrefixAccPub: "mochapub",
-        bech32PrefixValAddr: "mochavaloper",
-        bech32PrefixValPub: "mochavaloperpub",
-        bech32PrefixConsAddr: "mochavalcons",
-        bech32PrefixConsPub: "mochavalconspub",
-      },
-      currencies: [
-        {
-          coinDenom: "MOCHA",
-          coinMinimalDenom: "umocha",
-          coinDecimals: 6,
-        },
-      ],
-      feeCurrencies: [
-        {
-          coinDenom: "MOCHA",
-          coinMinimalDenom: "umocha",
-          coinDecimals: 6,
-        },
-      ],
-      gasPriceStep: {
-        low: 0.01,
-        average: 0.025,
-        high: 0.03,
-      },
-      features: ["stargate", "ibc-transfer", "cosmwasm"],
-    });
-    toast.success("Chain Mocha-4 đã được thêm vào Keplr!");
-  } catch (error) {
-    console.error("Lỗi khi thêm chain Mocha-4 vào Keplr:", error);
-    toast.error("Lỗi khi thêm chain Mocha-4 vào Keplr.");
-  }
-};
 const WalletConnecting = ({ onConnectSuccess }) => {
   const [walletAddress, setWalletAddress] = useState("");
   const [signature, setSignature] = useState("");
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState("");
 
-  useEffect(() => {
-    const autoLogin = async () => {
-      if (!window.keplr) {
-        toast.error("Keplr Wallet chưa được cài đặt. Vui lòng cài đặt!");
-        return;
-      }
-
-      try {
-        const chainId = "mocha-4";
-
-        // Thêm chain Mocha-4 vào Keplr
-        await addMochaChain();
-
-        // Kích hoạt chain Mocha-4
-        await window.keplr.enable(chainId);
-
-        const offlineSigner = window.getOfflineSigner(chainId);
-        const accounts = await offlineSigner.getAccounts();
-
-        if (accounts.length > 0) {
-          const walletAddress = accounts[0].address;
-          setWalletAddress(walletAddress);
-
-          const walletStatus = await checkWallet(walletAddress);
-          if (walletStatus.wallet) {
-            setConnected(true);
-            setStatus(`Ví đã được liên kết với tài khoản: ${walletStatus.user.name}`);
-            toast.success("Đăng nhập thành công!");
-          } else {
-            setStatus("Ví chưa được liên kết. Vui lòng liên kết ví.");
-            toast.info("Ví chưa được liên kết.");
-          }
-        }
-      } catch (error) {
-        console.error("Lỗi khi kiểm tra trạng thái ví:", error);
-        toast.error("Lỗi khi kiểm tra trạng thái ví!");
-      }
-    };
-
-    autoLogin();
-  }, []);
-
-  const connectWallet = async () => {
+  const connectWalletAndSendToBackend = async () => {
     if (!window.keplr) {
       toast.error("Keplr Wallet chưa được cài đặt. Vui lòng cài đặt!");
       return;
     }
 
     try {
-      const chainId = "mocha-4";
+      const chainId = "mocha";
 
-      // Thêm chain Mocha-4 vào Keplr
-      await addMochaChain();
-
-      // Kích hoạt chain Mocha-4
-      await window.keplr.enable(chainId);
+      // Kích hoạt ví nếu chưa kết nối
+      if (!connected) {
+        await window.keplr.enable(chainId);
+      }
 
       const offlineSigner = window.getOfflineSigner(chainId);
       const accounts = await offlineSigner.getAccounts();
@@ -129,6 +30,7 @@ const WalletConnecting = ({ onConnectSuccess }) => {
       if (accounts.length > 0) {
         const walletAddress = accounts[0].address;
 
+        // Tạo signature
         const message = `Connect wallet at ${new Date().toISOString()}`;
         const signature = await window.keplr.signArbitrary(
           chainId,
@@ -139,15 +41,26 @@ const WalletConnecting = ({ onConnectSuccess }) => {
         setWalletAddress(walletAddress);
         setSignature(signature.signature);
 
+        // Kiểm tra nếu ví đã liên kết
         setLoading(true);
-        await sendToBackend(walletAddress, signature.signature); // Gửi thông tin ví lên backend
-        setConnected(true);
-        setStatus("Ví đã được liên kết thành công!");
-        toast.success("Ví đã được liên kết thành công!");
+        const walletStatus = await checkWallet(walletAddress);
+
+        if (walletStatus?.wallet) {
+          // Nếu đã liên kết
+          setConnected(true);
+          toast.success("Ví đã được liên kết!");
+          if (onConnectSuccess) onConnectSuccess();
+        } else {
+          // Nếu chưa liên kết, gửi thông tin lên backend
+          await sendWalletToBackend(walletAddress, signature.signature);
+          setConnected(true);
+          toast.success("Ví đã được liên kết thành công!");
+          if (onConnectSuccess) onConnectSuccess();
+        }
       }
     } catch (error) {
-      console.error("Lỗi khi kết nối ví:", error);
-      toast.error("Lỗi khi kết nối ví!");
+      console.error("Lỗi khi kết nối ví hoặc gửi backend:", error);
+      toast.error("Lỗi: Không thể kết nối ví hoặc gửi backend!");
     } finally {
       setLoading(false);
     }
@@ -167,13 +80,15 @@ const WalletConnecting = ({ onConnectSuccess }) => {
             className={`wallet-button animate-button ${
               loading ? "disabled-button" : "connect-button"
             }`}
-            onClick={connectWallet}
+            onClick={connectWalletAndSendToBackend}
             disabled={loading}
           >
-            Connect to the
+            {loading ? "Đang xử lý..." : "Connect to the"}
           </button>
         )}
-        {status && <p className="wallet-status">{status}</p>}
+        {connected && (
+          <p className="wallet-status">Ví đã kết nối: {walletAddress}</p>
+        )}
       </div>
     </div>
   );

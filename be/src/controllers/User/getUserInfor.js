@@ -10,13 +10,11 @@ const getUserInfo = async (req, res, next) => {
       throw new AppError(400, "Thiếu địa chỉ ví", "Get User Info Error");
     }
 
-    // Lấy thông tin ví từ Wallet
     const wallet = await Wallet.findOne({ walletAddress });
     if (!wallet) {
       throw new AppError(404, "Không tìm thấy ví", "Get User Info Error");
     }
 
-    // Lấy thông tin user liên kết với ví
     const user = await User.findOne({ WalletAddress: walletAddress });
     if (!user) {
       throw new AppError(
@@ -33,7 +31,7 @@ const getUserInfo = async (req, res, next) => {
       {
         Name: user.Name,
         WalletAddress: user.WalletAddress,
-        Balance: wallet.balance, // Lấy số dư từ Wallet
+        Balance: wallet.balance,
         TotalPets: user.TotalPets,
         LevelHouse: user.LevelHouse,
       },

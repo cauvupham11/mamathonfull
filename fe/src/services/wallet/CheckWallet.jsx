@@ -9,13 +9,18 @@ export const checkWallet = async (walletAddress) => {
   if (!walletAddress) {
     throw new Error("Địa chỉ ví không được để trống.");
   }
+
   try {
-    const response = await apiService.post("/wallet/check", {
+    const response = await apiService.post("/wallets/check", {
       walletAddress,
     });
-    return response.data; // Trả về dữ liệu từ server
+
+    return response;
   } catch (error) {
-    console.error("Lỗi khi kiểm tra trạng thái ví:", error.response || error.message);
+    console.error(
+      "Lỗi khi kiểm tra trạng thái ví:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-
-const userSchema = new mongoose.Schema(
+const Schema = mongoose.Schema;
+const userSchema = new Schema(
   {
     Name: {
       type: String,
@@ -11,14 +11,13 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    petID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Pet",
-    },
-    TotalPets: {
-      type: Number,
-      default: 1,
-    },
+
+    TotalPets: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Pet",
+      },
+    ],
     off_chain_pets: {
       type: [String],
       default: [],

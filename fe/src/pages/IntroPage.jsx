@@ -1,19 +1,32 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import WalletConnecting from "../components/WalletConnecting";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import StartButton from "../components/StartButton";
+import Notification from "../components/Notification"; // Import Notification
+import WelcomeMessage from "../components/Welcome";
+// Import WelcomeMessage
 
 const IntroPage = () => {
-  const [isConnected, setIsConnected] = useState(false); // Kiểm tra trạng thái kết nối ví
-  const [hasStarted, setHasStarted] = useState(false); // Kiểm tra trạng thái bắt đầu
-  const [skipTriggered, setSkipTriggered] = useState(false); // Trạng thái bỏ qua video
+  const [isConnected, setIsConnected] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [skipTriggered, setSkipTriggered] = useState(false);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [notification, setNotification] = useState({
+    open: false,
+    message: "",
+    type: "",
+  });
+  const [showWelcome, setShowWelcome] = useState(false); // Hiển thị WelcomeMessage
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const timeoutRef = useRef(null);
-
+  const progressIntervalRef = useRef(null);
+  const navigate = useNavigate();
 
   const handleConnectionSuccess = () => {
-    setIsConnected(true); // Đánh dấu ví đã được kết nối
+    setIsConnected(true);
+    showNotification("Kết nối ví thành công!", "success");
   };
 
   const handleStart = () => {
@@ -22,77 +35,115 @@ const IntroPage = () => {
       videoRef.current.play();
       audioRef.current.play();
     }
-
-    // Hiển thị thông báo khi bắt đầu
-    toast.success("Bắt đầu thành công!");
+    showNotification("Bắt đầu thành công!", "success");
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !timeoutRef.current) {
-      // Bắt đầu đếm thời gian khi giữ phím Enter
       timeoutRef.current = setTimeout(() => {
         setSkipTriggered(true);
-        toast.info("Video has skipped !!!");
-        setHasStarted(false); // Bỏ qua video và trở về giao diện chính
-
-        // Dừng video và audio
+        showNotification("Navigating to Room...", "info");
         if (videoRef.current) {
           videoRef.current.pause();
         }
         if (audioRef.current) {
           audioRef.current.pause();
         }
+        triggerWelcome();
+      }, 3000); // 3 seconds hold
 
-        timeoutRef.current = null;
-      }, 5000); // 5 giây
+      // Start progress
+      progressIntervalRef.current = setInterval(() => {
+        setHoldProgress((prev) => Math.min(prev + 1.67, 100));
+      }, 50);
     }
   };
 
   const handleKeyUp = (e) => {
     if (e.key === "Enter" && timeoutRef.current) {
-      // Dừng đếm thời gian khi nhả phím Enter
       clearTimeout(timeoutRef.current);
+      clearInterval(progressIntervalRef.current);
       timeoutRef.current = null;
+      progressIntervalRef.current = null;
+      setHoldProgress(0);
     }
   };
+
+  const handleVideoEnd = () => {
+    setVideoEnded(true);
+    showNotification("Video ended. Navigating to Room...", "info");
+    triggerWelcome();
+  };
+
+  const triggerWelcome = () => {
+    setShowWelcome(true); // Hiển thị WelcomeMessage
+  };
+
+  const handleWelcomeComplete = () => {
+    setShowWelcome(false);
+    navigate("/Room"); // Điều hướng sau khi WelcomeMessage kết thúc
+  };
+
+  const showNotification = (message, type) => {
+    setNotification({ open: true, message, type });
+  };
+
+  const closeNotification = () => {
+    setNotification((prev) => ({ ...prev, open: false }));
+  };
+
+  useEffect(() => {
+    if (videoEnded && hasStarted) {
+      videoRef.current && videoRef.current.pause();
+      audioRef.current && audioRef.current.pause();
+    }
+  }, [videoEnded]);
 
   return (
     <div
       className="relative min-h-screen min-w-full bg-black overflow-hidden"
-      tabIndex={0} // Đảm bảo div có thể nhận sự kiện bàn phím
+      tabIndex={0}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
     >
-      <ToastContainer />
+      <Notification
+        open={notification.open}
+        message={notification.message}
+        type={notification.type}
+        onClose={closeNotification}
+      />
       {!isConnected ? (
-        // Hiển thị component WalletConnecting nếu chưa kết nối ví
         <WalletConnecting onConnectSuccess={handleConnectionSuccess} />
       ) : !hasStarted ? (
-        <div className="flex items-center justify-center h-full">
-          <button
-            className="px-6 py-3 bg-purple-500 text-white text-xl rounded shadow-lg hover:bg-purple-600"
-            onClick={handleStart}
-          >
-            Bắt đầu
-          </button>
-        </div>
+        <StartButton onStart={handleStart} />
       ) : (
         <>
-          {/* Hiển thị video và audio khi nhấn nút "Bắt đầu" */}
           <video
             ref={videoRef}
             className="absolute top-0 left-0 w-screen h-screen object-contain"
             src="/video/6208926054757.mp4"
             autoPlay
-            loop
             controls={false}
+            onEnded={handleVideoEnd}
           />
           <audio ref={audioRef} src="/audio/background.mp3" loop />
-          {skipTriggered && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black">
-              <p className="text-white text-2xl">Video has skipped !!!</p>
+          {!videoEnded && !skipTriggered && (
+            <div className="absolute top-4 right-4 flex items-center gap-2 text-white">
+              <div className="relative">
+                <div
+                  className="w-10 h-10 border-4 border-gray-500 rounded-full flex items-center justify-center"
+                  style={{
+                    background: `conic-gradient(#4caf50 ${holdProgress}%, #ccc ${holdProgress}%)`,
+                    transition: "background 50ms linear",
+                  }}
+                >
+                  ⏎
+                </div>
+              </div>
+              <p className="text-sm">Hold Enter to skip</p>
             </div>
           )}
+          {showWelcome && <WelcomeMessage onComplete={handleWelcomeComplete} />}
         </>
       )}
     </div>
