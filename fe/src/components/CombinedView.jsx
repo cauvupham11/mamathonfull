@@ -17,7 +17,7 @@ const CombinedView = () => {
           width: '100%',
           height: '100%',
           zIndex: 10, // Đảm bảo nằm trên canvas
-          pointerEvents: 'none', // Cho phép click xuyên qua MainBoundary nếu cần
+          pointerEvents: 'all', // Cho phép click xuyên qua MainBoundary nếu cần
         }}
       >
         <MainBoundary />

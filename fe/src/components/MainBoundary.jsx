@@ -1,19 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Backpack from "./Backpack";
+import StoreUser from "./StoreUser";
 
 const MainBoundary = () => {
   const [isBackpackOpen, setBackpackOpen] = useState(false);
+  const [isStoreOpen, setStoreOpen] = useState(false);
+  const [itemsForUsers, setItemsForUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("./products.json")
+    .then((response) => response.json())
+    .then((data) => setItemsForUsers(data))
+    .catch((err) => console.log("Error while fetching data", err))
+  }, []);
 
   const openStore = () => {
-    window.alert("hihi");
+    setStoreOpen(true);
   };
+
+  const closeStore = () => {
+    setStoreOpen(false);
+  }
 
   const closeBackpack = () => {
     setBackpackOpen(false);
   };
 
   const openBackpack = () => {
-    console.log("status change!!");
     setBackpackOpen(true);
   };
 
@@ -105,6 +118,9 @@ const MainBoundary = () => {
 
       {isBackpackOpen && (
         <Backpack closeBackpack={closeBackpack} items={items} />
+      )}
+      {isStoreOpen && (
+        <StoreUser closeStore={closeStore} itemsForUsers={itemsForUsers}/>
       )}
     </div>
   );

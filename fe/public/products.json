@@ -1,0 +1,21 @@
+[
+    {
+      "id": 1,
+      "name": "Eggs",
+      "image": "/src/assets/img/close.png",
+      "status": "Item has been selling"
+    },
+    {
+      "id": 2,
+      "name": "Food",
+      "image": "https://example.com/images/iphone-14-promax.jpg",
+      "status": "Item has been bought by someone"
+    },
+    {
+      "id": 3,
+      "name": "Drinks",
+      "image": "https://example.com/images/sony-wh-1000xm5.jpg",
+      "status": "Request selling has been time out"
+    }
+  ]
+  
