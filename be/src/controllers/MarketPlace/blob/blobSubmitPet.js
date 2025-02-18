@@ -86,6 +86,8 @@ const blobSubmitPet = async (req, res) => {
         "Content-Type": "application/json",
       },
     });
+    newPet.transactionHeight = response.data.result;
+    await newPet.save();
 
     return res.status(200).json(response.data);
   } catch (error) {

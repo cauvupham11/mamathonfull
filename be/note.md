@@ -48,8 +48,9 @@
 
 // TIẾN ĐỘ //
 
-=> LEVEL UP
+=> LEVEL UP( đổi submitblob thành submit pay for blob khi này trả về height và hash rồi mới lưu được vào mongodb. thêm trường chứa height và hash)
 
+-
 - Dừng ở GET BLOB SUBMIT
 - SAU KHI LẤY ĐƯỢC GET RỒI
 - CHO ĂN
