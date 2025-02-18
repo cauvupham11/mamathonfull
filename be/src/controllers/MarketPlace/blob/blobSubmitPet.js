@@ -1,5 +1,6 @@
 const axios = require("axios");
 const bech32 = require("bech32");
+const Pet = require("../../../models/pet");
 const validateBech32Address = (address) => {
   try {
     bech32.decode(address);
@@ -13,15 +14,15 @@ const blobSubmitPet = async (req, res) => {
   try {
     const {
       namespace,
-      data,
       gas_price,
       gas,
       key_name,
       signer_address,
       fee_granter_address,
+      name,
     } = req.body;
 
-    if (!namespace || !data || !signer_address) {
+    if (!namespace || !signer_address) {
       return res.status(400).json({ error: "Thiếu thông tin cần thiết" });
     }
 
@@ -35,8 +36,25 @@ const blobSubmitPet = async (req, res) => {
         .status(400)
         .json({ error: "Địa chỉ fee_granter_address không hợp lệ" });
     }
-
-    const encodedData = Buffer.from(data).toString("base64");
+    const newPet = new Pet({
+      name,
+      level: 1,
+      exp: 0,
+      value: 100,
+      owner: signer_address,
+      onChain: true,
+    });
+    await newPet.save();
+    const enCodedPetData = Buffer.from(
+      JSON.stringify({
+        name: newPet.name,
+        level: newPet.level,
+        exp: newPet.exp,
+        value: newPet.value,
+        owner: newPet.owner,
+        onChain: newPet.onChain,
+      })
+    ).toString("base64");
 
     const payload = {
       id: 1,
@@ -46,7 +64,7 @@ const blobSubmitPet = async (req, res) => {
         [
           {
             namespace: namespace,
-            data: encodedData,
+            data: enCodedPetData,
             share_version: 0,
             commitment: "",
             index: -1,
@@ -55,7 +73,7 @@ const blobSubmitPet = async (req, res) => {
         {
           gas_price: gas_price || 0.002,
           is_gas_price_set: true,
-          gas: gas || 80000,
+          gas: gas || 0.002,
           key_name: key_name || "my_celes_key",
           signer_address: signer_address,
           fee_granter_address: fee_granter_address || signer_address,

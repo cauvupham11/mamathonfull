@@ -1,64 +1,36 @@
+const { AppError, sendResponse } = require("../../helpers/utils");
 const Pet = require("../../models/pet");
 
-const { sendResponse, AppError } = require("../../helpers/utils");
-const blobSubmitPet = require("../MarketPlace/blob/blobSubmitPet");
-
-const levelUpPet = async (req, res, next) => {
+const levelUp = async (req, res, next) => {
   try {
-    const { petId } = req.params;
-
-    const pet = await Pet.findById(petId);
-
+    const { petID, signerAddress, keyName } = req.body;
+    const pet = await Pet.findOne(petID);
     if (!pet) {
-      throw new AppError(404, "Không tìm thấy Pet", "Level Up Error");
+      throw new AppError("Pet not found", 404);
     }
-
-    const requiredExp = pet.Level * 15;
-    if (pet.Exp < requiredExp) {
-      throw new AppError(
-        400,
-        `Cần ${requiredExp - pet.Exp} EXP để lên cấp`,
-        "Level Up Error"
-      );
+    const reuiredExp = pet.calculateRequiredExp();
+    if (pet.exp >= reuiredExp) {
+      pet.level += 1;
+      pet.exp = 0;
+      pet.value += 50;
+      await pet.save();
+      const encodedPetData = Buffer.from(
+        JSON.stringify({
+          name: pet.name,
+          level: pet.level,
+          exp: pet.exp,
+          value: pet.value,
+          owner: pet.owner,
+          onChain: true,
+        })
+      ).toString("base64");
+      // await submitBlob(signerAddress, keyName, encodedPetData);
+      sendResponse(res, 200, true, { pet }, null, "Pet level Up successfully");
+    } else {
+      throw new AppError("hot enough EXP to level up", 400);
     }
-
-    if (pet.Level >= 2) {
-      const userConfirmation = req.body.confirm;
-      if (!userConfirmation) {
-        return sendResponse(
-          res,
-          200,
-          true,
-          {
-            message: `Pet đủ EXP để lên cấp. Xác nhận để thăng cấp lên Level ${
-              pet.Level + 1
-            }.`,
-          },
-          null,
-          "Yêu cầu xác nhận từ người dùng"
-        );
-      }
-
-      await blobSubmitPet(pet);
-    }
-
-    pet.Level += 1;
-    pet.Exp -= requiredExp;
-    pet.Ability = `Level ${pet.Level} Ability`;
-    pet.value = parseFloat((pet.value * 1.5).toFixed(2));
-    await pet.save();
-
-    sendResponse(
-      res,
-      200,
-      true,
-      pet,
-      null,
-      `Pet đã thăng cấp lên Level ${pet.Level}`
-    );
   } catch (error) {
     next(error);
   }
 };
-
-module.exports = levelUpPet;
+module.exports = levelUp;

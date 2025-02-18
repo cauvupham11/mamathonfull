@@ -10,6 +10,7 @@ const usersRouter = require("../be/src/routes/users");
 const authRouter = require("../be/src/routes/");
 const petRouter = require("../be/src/routes/pets");
 const walletRouter = require("../be/src/routes/wallet");
+const MarketPlaceRouter = require("../be/src/routes/market");
 const cors = require("cors");
 const app = express();
 app.use(cors());
@@ -33,7 +34,7 @@ app.use("/users", usersRouter);
 app.use("/auth", authRouter);
 app.use("/pets", petRouter);
 app.use("/wallets", walletRouter);
-
+app.use("/market", MarketPlaceRouter);
 app.use((req, res, next) => {
   const err = new AppError(404, "Not Found");
   next(err);

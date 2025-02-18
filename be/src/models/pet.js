@@ -1,28 +1,29 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const calculateRequireExp = (level) => {
+  return 100 + (level - 1) * 30;
+};
 const petSchema = new Schema(
   {
-    Name: {
+    name: {
       type: String,
-      required: true,
     },
-    Exp: {
+    exp: {
       type: Number,
       default: 0,
     },
-    Ability: {
+    ability: {
       type: String,
       default: "Basic",
     },
-    Level: {
+    level: {
       type: Number,
       default: 1,
     },
     model3D: {
       type: String,
-      required: true,
     },
-    OnChain: {
+    onChain: {
       type: Boolean,
       default: false,
     },
@@ -31,8 +32,7 @@ const petSchema = new Schema(
       default: 100,
     },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
     },
     coverImage: {
       type: String,
@@ -54,6 +54,8 @@ const petSchema = new Schema(
     timestamps: true,
   }
 );
-
+petSchema.methods.calculateRequireExp = function () {
+  return calculateRequireExp(this.level);
+};
 const Pet = mongoose.model("Pet", petSchema);
 module.exports = Pet;
