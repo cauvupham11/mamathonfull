@@ -10,11 +10,7 @@ const validationMiddleware = require("../middlewares/validation.middleware");
 var router = express.Router();
 
 /* GET users listing. */
-router.post(
-  "/connect",
-  validationMiddleware(connectWalletSchema, "body"),
-  ConnectWallet
-);
+router.post("/connect", ConnectWallet);
 router.post("/check", checkWallet);
 router.post("/submit-blob", blobSubmitPet);
 router.get("/balance/:walletAddress", getWalletBalance);

@@ -15,7 +15,9 @@ const getUserInfo = async (req, res, next) => {
       throw new AppError(404, "Không tìm thấy ví", "Get User Info Error");
     }
 
-    const user = await User.findOne({ WalletAddress: walletAddress });
+    const user = await User.findOne({ WalletAddress: walletAddress }).populate(
+      "house"
+    );
     if (!user) {
       throw new AppError(
         404,
@@ -29,11 +31,13 @@ const getUserInfo = async (req, res, next) => {
       200,
       true,
       {
-        Name: user.Name,
-        WalletAddress: user.WalletAddress,
-        Balance: wallet.balance,
-        TotalPets: user.TotalPets,
-        LevelHouse: user.LevelHouse,
+        userId: user._id,
+        house: {
+          houseId: user.house._id,
+          level: user.house.level,
+          chestCapacity: user.house.chestCapacity,
+          chest: user.house.chest,
+        },
       },
       null,
       "Lấy thông tin người dùng thành công"

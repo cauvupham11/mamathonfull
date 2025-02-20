@@ -1,3 +1,4 @@
+const { required } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const itemSchema = new Schema({
@@ -7,13 +8,13 @@ const itemSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["necklace", "Socks", "Nameplate"],
+    enum: ["Necklace", "Socks", "Nameplate"],
     required: true,
   },
-  petID: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Pet",
+  quantity: {
+    type: Number,
     required: true,
+    default: 1,
   },
   value: {
     type: Number,

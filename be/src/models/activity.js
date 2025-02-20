@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const activitySchema = new Schema({
   type: {
     type: String,
-    enum: ["Feeding", "Sleeping", "Login", "Battle"],
+    enum: ["Feeding", "Sleeping", "Login", "Battle", "Playing"],
     required: true,
   },
   time: {

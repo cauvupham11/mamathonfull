@@ -15,6 +15,7 @@ const checkWallet = async (req, res, next) => {
     );
 
     if (existingWallet) {
+      await existingWallet.userId.populate("house");
       const token = jwt.sign(
         { userId: existingWallet.userId._id, walletAddress },
         process.env.JWT_SECRET_KEY,

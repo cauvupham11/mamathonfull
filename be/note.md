@@ -48,14 +48,13 @@
 
 // TIẾN ĐỘ //
 
-=> LEVEL UP( đổi submitblob thành submit pay for blob khi này trả về height và hash rồi mới lưu được vào mongodb. thêm trường chứa height và hash)
-
--
-- Dừng ở GET BLOB SUBMIT
-- SAU KHI LẤY ĐƯỢC GET RỒI
-- CHO ĂN
-- TĂNG LEVEL
+=> LEVEL UP
+=> Tạo HOUSE ( DONE)
+=> HIỂN THỊ LIMIT CHO CHEST ( 10 slot lv1) ( DONE)
+=> TẠO XONG THÌ TẠO FOOD & ITEM
+=> ADD FOOD & ITEM VÀO TRONG CHEST CỦA HOUSE NGƯỜI DÙNG
+=> SỬ DỤNG
+=> ĐỦ LEVEL
+=> THĂNG CẤP
 
 // FIX BUG //
-
-- GET BLOB SUBMIT KHÔNG LẤY ĐƯỢC namespace, commitment

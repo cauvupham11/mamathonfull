@@ -2,6 +2,7 @@ const { AppError, sendResponse } = require("../../helpers/utils");
 const User = require("../../models/user");
 const Wallet = require("../../models/wallet");
 const Pet = require("../../models/pet");
+const House = require("../../models/house"); // Import House model
 const validateWalletAddress = require("../blockChain/validateWalletAddress");
 
 const connectWallet = async (req, res, next) => {
@@ -33,14 +34,26 @@ const connectWallet = async (req, res, next) => {
       );
     }
 
+    // Tạo User mới với các thông tin cần thiết
     const newUser = new User({
       WalletAddress: walletAddress,
       created_at: new Date(),
       last_login: new Date(),
     });
 
+    // Tạo House với chest cho User
+    const house = new House({
+      level: 1, // Giả sử cấp độ 1
+      chest: { items: [], food: [] }, // Khởi tạo chest với 2 mảng item và food
+      owners: [newUser._id],
+      chestCapacity: 10,
+    });
+    await house.save();
+
+    newUser.house = house._id; // Gán house cho user
     const user = await newUser.save();
 
+    // Gán pet cho user mới
     const offChainPets = await Pet.find({ OnChain: false });
 
     if (!offChainPets || offChainPets.length === 0) {
@@ -60,6 +73,7 @@ const connectWallet = async (req, res, next) => {
     assignedPet.owner = user._id;
     await assignedPet.save();
 
+    // Lưu wallet mới cho user
     const newWallet = new Wallet({
       walletAddress,
       signature,
@@ -70,7 +84,9 @@ const connectWallet = async (req, res, next) => {
     await newWallet.save();
 
     // Populate thông tin pet từ user
-    const populatedUser = await User.findById(user._id).populate("TotalPets");
+    const populatedUser = await User.findById(user._id)
+      .populate("TotalPets")
+      .populate("house");
 
     sendResponse(
       res,

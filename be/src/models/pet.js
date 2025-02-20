@@ -48,6 +48,9 @@ const petSchema = new Schema(
     transactionHeight: {
       type: Number,
     },
+    transactionHash: {
+      type: String,
+    },
     created_at: {
       type: Date,
       default: Date.now,

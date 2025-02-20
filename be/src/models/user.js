@@ -22,9 +22,9 @@ const userSchema = new Schema(
       type: [String],
       default: [],
     },
-    LevelHouse: {
-      type: Number,
-      default: 1,
+    house: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "House",
     },
     created_at: {
       type: Date,
@@ -34,6 +34,10 @@ const userSchema = new Schema(
       type: Date,
     },
     Balance: {
+      type: Number,
+      default: 0,
+    },
+    balanceFiat: {
       type: Number,
       default: 0,
     },
