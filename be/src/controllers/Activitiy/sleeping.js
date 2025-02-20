@@ -1,26 +1,32 @@
 const { AppError, sendResponse } = require("../../helpers/utils");
-const Activity = require("../../models/activity");
+
 const Pet = require("../../models/pet");
 
 const sleeping = async (req, res, next) => {
   try {
     const { petID } = req.body;
+    // Kiểm tra xem pet có tồn tại không
     const pet = await Pet.findById(petID);
     if (!pet) {
       throw new AppError("Missing pet", 404);
     }
-    pet.exp += 15;
+
+    // Tăng EXP cho pet
+    pet.exp += 20; // Tăng 20 exp khi pet ngủ
     await pet.save();
-    const activity = new Activity({
-      type: "Sleeping",
-      pet: pet._id,
-      reward: "15 exp",
-      status: "Completed",
-    });
-    await activity.save();
-    sendResponse(res, 200, true, { activity }, null, "sleeping successfully");
+
+    // Gửi phản hồi thành công
+    sendResponse(
+      res,
+      200,
+      true,
+      { pet },
+      null,
+      "Pet has slept and gained 20 exp."
+    );
   } catch (error) {
     next(error);
   }
 };
+
 module.exports = sleeping;

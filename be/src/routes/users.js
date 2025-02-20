@@ -5,6 +5,7 @@ const getUserInfoVSchema = require("../controllers/src/user/getUserInfoVSchema")
 const upgradeHouse = require("../controllers/House/upgradeHouse");
 const getUserHouseInfo = require("../controllers/House/getHouseInfo");
 const deposit = require("../controllers/User/updateUser");
+const buyTicket = require("../controllers/User/buyTickets");
 
 var router = express.Router();
 
@@ -18,5 +19,6 @@ router.get(
 router.post("/upgrade-house", upgradeHouse);
 router.put("/deposit", deposit);
 router.get("/:userId/house", getUserHouseInfo);
+router.post("/buyTicket", buyTicket);
 
 module.exports = router;

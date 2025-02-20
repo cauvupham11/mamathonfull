@@ -11,6 +11,10 @@ const itemSchema = new Schema({
     enum: ["Necklace", "Socks", "Nameplate"],
     required: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
   quantity: {
     type: Number,
     required: true,

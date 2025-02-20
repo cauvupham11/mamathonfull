@@ -5,6 +5,8 @@ const createItem = require("../controllers/item/createItem");
 const getAllFood = require("../controllers/MarketPlace/getAllFood");
 const getAllItem = require("../controllers/MarketPlace/getAllItem");
 const addFoodToChest = require("../controllers/MarketPlace/addFoodToChest");
+const spinWheel = require("../controllers/User/spinWheel");
+const addItemToChest = require("../controllers/MarketPlace/addItemToChest");
 var router = express.Router();
 
 router.get("/pet", getPetData);
@@ -13,4 +15,6 @@ router.post("/item", createItem);
 router.get("/foods", getAllFood);
 router.get("/items", getAllItem);
 router.post("/buy-food", addFoodToChest);
+router.post("/buyt-item", addItemToChest);
+router.post("/spin-wheel", spinWheel);
 module.exports = router;

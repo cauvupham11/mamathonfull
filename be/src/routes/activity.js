@@ -5,5 +5,5 @@ const sleeping = require("../controllers/Activitiy/sleeping");
 var router = express.Router();
 
 router.post("/feeding", feeding);
-router.post("/sleepig", sleeping);
+router.post("/sleeping", sleeping);
 module.exports = router;

@@ -22,6 +22,7 @@ app.use(cookieParser());
 
 const mongoose = require("mongoose");
 const { sendResponse, AppError } = require("./src/helpers/utils");
+const dailyResetTask = require("./src/helpers/schedule");
 const mongoURI = process.env.MONGODB_URI;
 const CELENODE = process.env.CELENODE;
 const NUMIA_API_KEY = process.env.NUMIA_API_KEY;
@@ -37,6 +38,7 @@ app.use("/pets", petRouter);
 app.use("/wallets", walletRouter);
 app.use("/market", MarketPlaceRouter);
 app.use("/activities", activityRouter);
+dailyResetTask();
 app.use((req, res, next) => {
   const err = new AppError(404, "Not Found");
   next(err);

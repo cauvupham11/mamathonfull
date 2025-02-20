@@ -1,93 +1,80 @@
-const Prize = require("../../models/prize"); // Sử dụng bảng prize để lưu phần quà
+const { AppError, sendResponse } = require("../../helpers/utils");
 const User = require("../../models/user");
 const Pet = require("../../models/pet");
 const Food = require("../../models/food");
-const { AppError, sendResponse } = require("../../helpers/utils");
 
 const spinWheel = async (req, res, next) => {
   try {
     const { userID } = req.body;
 
     if (!userID) {
-      throw new AppError("User ID is required", 400);
+      throw new AppError("UserID is required", 400);
     }
 
-    // Lấy thông tin người dùng
+    // Tìm người dùng
     const user = await User.findById(userID);
     if (!user) {
       throw new AppError("User not found", 404);
     }
 
-    // Logic trừ phí quay nếu có (ví dụ: 10 balanceFiat)
-    const spinCost = 10; // Chi phí quay
-    if (user.balanceFiat < spinCost) {
-      throw new AppError("Insufficient balance to spin", 400);
+    // Kiểm tra nếu người dùng có vé quay
+    if (user.tickets <= 0) {
+      throw new AppError("You don't have enough tickets to spin", 400);
     }
 
-    // Trừ đi phí quay
-    user.balanceFiat -= spinCost;
+    // Giảm số vé của người dùng
+    user.tickets -= 1;
     await user.save();
 
-    // Lấy danh sách các phần quà
-    const prizes = await Prize.find({});
+    // Xác suất trúng phần quà
+    const randomNumber = Math.random();
+    let prize = null;
 
-    // Logic quay: chọn ngẫu nhiên một phần quà
-    const random = Math.random();
-    let cumulativeChance = 0;
-    let selectedPrize = null;
-
-    for (let prize of prizes) {
-      cumulativeChance += prize.chance;
-      if (random < cumulativeChance) {
-        selectedPrize = prize;
-        break;
+    if (randomNumber < 0.1) {
+      // 10% xác suất trúng pet
+      const pets = await Pet.find({ OnChain: false });
+      if (pets.length === 0) {
+        throw new AppError("No available pets to give", 500);
       }
-    }
-
-    if (!selectedPrize) {
-      throw new AppError("Error selecting prize", 500);
-    }
-
-    // Cập nhật phần quà cho người dùng
-    if (selectedPrize.type === "pet") {
-      const pet = await Pet.findById(selectedPrize.value);
-      if (!pet) {
-        throw new AppError("Pet not found", 404);
+      const randomPet = pets[Math.floor(Math.random() * pets.length)];
+      prize = {
+        type: "Pet",
+        name: randomPet.name,
+        petId: randomPet._id,
+      };
+    } else if (randomNumber < 0.7) {
+      // 60% xác suất trúng food
+      const foods = await Food.find();
+      if (foods.length === 0) {
+        throw new AppError("No available foods to give", 500);
       }
-      user.TotalPets.push(pet._id);
-      await user.save();
-    } else if (selectedPrize.type === "food") {
-      const food = await Food.findById(selectedPrize.value);
-      if (!food) {
-        throw new AppError("Food not found", 404);
-      }
-      // Thêm food vào chest
-      user.house.chest.food.push({
-        _id: food._id,
-        name: food.name,
-        quantity: 1,
-      });
-      await user.house.save();
-    } else if (selectedPrize.type === "item") {
-      // Giả sử item đã có trong hệ thống, cập nhật vào chest
-      user.house.chest.items.push({
-        name: selectedPrize.value,
-        quantity: 1,
-      });
-      await user.house.save();
-    } else if (selectedPrize.type === "balance") {
-      user.balanceFiat += selectedPrize.value;
+      const randomFood = foods[Math.floor(Math.random() * foods.length)];
+      prize = {
+        type: "Food",
+        name: randomFood.name,
+        foodId: randomFood._id,
+      };
+    } else {
+      // 30% xác suất trúng tiền fiat
+      const amount = Math.floor(Math.random() * 50) + 1; // Trúng 1 đến 50 fiat
+      prize = {
+        type: "Fiat",
+        amount,
+      };
+
+      // Cộng tiền vào balanceFiat của người dùng
+      user.balanceFiat += amount;
       await user.save();
     }
 
-    // Gửi phản hồi thành công
+    // Gửi kết quả quay cho người dùng
     sendResponse(
       res,
       200,
       true,
-      { prize: selectedPrize },
+      { prize },
       null,
-      "Spin successful, you won: " + selectedPrize.type
+      `You won a ${prize.type}: ${prize.name || prize.amount}`
     );
   } catch (error) {
     next(error);
