@@ -1,29 +1,43 @@
-import React from 'react';
-import MainBoundary from './MainBoundary'; // Import giao diện overlay
-import Room from '../pages/Room';
+import React from "react";
+import Room from "../pages/Room";
+import AvatarStatus from "../components/AvatarStatus";
+import Coin from "../components/Coin";
+import Menu from "../components/Menu";
+import StatusBar from "../components/StatusBar"; // Import StatusBar
 
 const CombinedView = () => {
+  const updateStatus = (status) => {
+    console.log(`Status updated to: ${status}`); // Hàm thay đổi trạng thái
+  };
+
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+    <div style={{ position: "relative", width: "100vw", height: "100vh" }}>
       {/* Giao diện 3D */}
       <Room />
 
-      {/* Giao diện MainBoundary nằm trên */}
+      {/* Overlay */}
       <div
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 10, // Đảm bảo nằm trên canvas
-          pointerEvents: 'all', // Cho phép click xuyên qua MainBoundary nếu cần
+          zIndex: 10,
+          pointerEvents: "auto", // Cho phép tương tác
         }}
       >
-        <MainBoundary />
+        {/* Avatar + Status */}
+        <AvatarStatus />
+
+        {/* Coin */}
+        <Coin />
+
+        {/* Menu */}
+        <Menu />
       </div>
+
+      {/* Thanh trạng thái phía dưới */}
+      <StatusBar updateStatus={updateStatus} />
     </div>
   );
 };
-
 export default CombinedView;

@@ -9,7 +9,6 @@ const getPetData = async (req, res, next) => {
     if (!petId) {
       throw new AppError("Missing information required", 400);
     }
-
     const pet = await Pet.findById(petId);
     if (!pet) {
       throw new AppError("Pet has not found ", 404);

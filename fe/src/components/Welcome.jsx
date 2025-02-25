@@ -36,5 +36,4 @@ const WelcomeMessage = ({ onComplete }) => {
     </div>
   );
 };
-
 export default WelcomeMessage;

@@ -1,45 +1,39 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
-const Backpack = ({ closeBackpack, transferToChest }) => {
+const Chest = ({ closeChest }) => {
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
-    fetch("/data.json")
+    fetch("/data.json") // Không cần `src/`
       .then((response) => response.json())
       .then((data) => {
-        if (data.backpack) {
-          setItems(data.backpack);
+        if (data.chest) {
+          setItems(data.chest);
         }
       })
-      .catch((error) => console.error("Error loading backpack data:", error));
+      .catch((error) => console.error("Error loading chest data:", error));
   }, []);
-
-  const moveItemToChest = () => {
-    if (selectedItem) {
-      transferToChest(selectedItem);
-      setItems((prevItems) => prevItems.filter((i) => i.name !== selectedItem.name));
-      setSelectedItem(null);
-    }
-  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative w-11/12 sm:w-3/4 lg:w-1/2 bg-white rounded-xl p-6 shadow-lg">
         <h1 className="flex justify-center text-3xl font-bold py-5 font-mono text-gray-800">
-          Backpack
+          Chest
         </h1>
         <ul className="flex justify-center pb-4">
           <li className="absolute top-2 right-2 hover:opacity-80 cursor-pointer">
             <img
               className="w-8 h-8"
               src="/src/assets/img/eyebrow.png"
-              onClick={closeBackpack}
+              onClick={closeChest}
               alt="Close"
             />
           </li>
         </ul>
+
+        {/* Items Grid (Giữ layout ngay cả khi không có items) */}
         <div>
           <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4 px-2">
             {items.length > 0 ? (
@@ -59,6 +53,8 @@ const Backpack = ({ closeBackpack, transferToChest }) => {
             )}
           </ul>
         </div>
+
+        {/* Display selected item details */}
         {selectedItem && (
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center w-80">
@@ -67,13 +63,7 @@ const Backpack = ({ closeBackpack, transferToChest }) => {
               <p className="text-gray-700 mb-2">{selectedItem.details}</p>
               <p className="text-gray-600 text-sm">Quantity: {selectedItem.quantity}</p>
               <button
-                className="mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400"
-                onClick={moveItemToChest}
-              >
-                Move to Chest
-              </button>
-              <button
-                className="mt-4 ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400"
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400"
                 onClick={() => setSelectedItem(null)}
               >
                 Close
@@ -86,9 +76,9 @@ const Backpack = ({ closeBackpack, transferToChest }) => {
   );
 };
 
-Backpack.propTypes = {
-  closeBackpack: PropTypes.func.isRequired,
-  transferToChest: PropTypes.func.isRequired,
+// Define PropTypes
+Chest.propTypes = {
+  closeChest: PropTypes.func.isRequired,
 };
 
-export default Backpack;
+export default Chest;

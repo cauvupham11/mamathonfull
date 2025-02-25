@@ -1,0 +1,60 @@
+{
+    "user": {
+      "name": "kangourou",
+      "level": 1,
+      "exp": 250,
+      "coin": 500
+    },
+    "backpack": [
+    {
+      "name": "Chew Toy",
+      "image": "/src/assets/backpack/chew_toy.jpg",
+      "quantity": 1,
+      "details": "A toy for pets to chew on."
+    },
+    {
+      "name": "Goat",
+      "image": "/src/assets/backpack/goat.png",
+      "quantity": 1,
+      "details": "A small goat plush toy."
+    },
+    {
+      "name": "Hat",
+      "image": "/src/assets/backpack/hat.png",
+      "quantity": 1,
+      "details": "A stylish hat to wear."
+    },
+    {
+      "name": "Socks",
+      "image": "/src/assets/backpack/socks.png",
+      "quantity": 2,
+      "details": "A pair of warm socks."
+    }
+  ],
+    "chest": [
+      {
+        "name": "Apple",
+        "image": "/src/assets/item/Apple.png",
+        "quantity": 100,
+        "details": "A fresh apple that restores a small amount of HP."
+      },
+      {
+        "name": "Crown",
+        "image": "/src/assets/item/crown.png",
+        "quantity": 1,
+        "details": "A golden crown symbolizing royalty."
+      },
+      {
+        "name": "Gold Ring",
+        "image": "/src/assets/item/gold ring.png",
+        "quantity": 1,
+        "details": "A valuable gold ring that enhances luck."
+      },
+      {
+        "name": "Silver Ring",
+        "image": "/src/assets/item/Silver ring.png",
+        "quantity": 1,
+        "details": "A silver ring that boosts magical resistance."
+      }
+    ]
+  }
