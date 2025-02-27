@@ -123,19 +123,35 @@ const FoodBowl = () => {
   const foodBowlRef = useRef();
   const [showOptions, setShowOptions] = useState(false);
   const [hunger, setHunger] = useState(100);
+
   useEffect(() => {
     const hungerInterval = setInterval(() => {
       setHunger((prev) => Math.max(prev - 1, 0));
     }, 3000);
     return () => clearInterval(hungerInterval);
   }, []);
+
   const feedGoat = () => {
     setHunger((prev) => Math.min(prev + 20, 100));
+
+    // Update the experience when feeding the goat
+    const currentExp = parseInt(localStorage.getItem("userExp") || "0");
+    const updatedExp = currentExp + 20;  // Increase EXP by 20
+    localStorage.setItem("userExp", updatedExp);
+
+    // Update the EXP in the AvatarStatus component
+    const updatedLevel = Math.floor(updatedExp / 200);  // Example: leveling up every 200 EXP
+    localStorage.setItem("userLevel", updatedLevel);
+
+    // Call setCurrentExp in the AvatarStatus component
+    // (You might need to pass the setState function down as a prop or context)
   };
+
   const handleClick = (e) => {
     e.stopPropagation();
     setShowOptions((prev) => !prev);
   };
+
   return (
     <>
       <mesh
@@ -154,13 +170,7 @@ const FoodBowl = () => {
             <p className="font-bold">Hunger: {hunger}%</p>
             <div className="w-40 bg-gray-200 rounded-full overflow-hidden border border-gray-400">
               <div
-                className={`h-6 transition-all duration-500 ${
-                  hunger > 50
-                    ? 'bg-green-400'
-                    : hunger > 20
-                    ? 'bg-yellow-400'
-                    : 'bg-red-500'
-                }`}
+                className={`h-6 transition-all duration-500 ${hunger > 50 ? 'bg-green-400' : hunger > 20 ? 'bg-yellow-400' : 'bg-red-500'}`}
                 style={{ width: `${hunger}%` }}
               ></div>
             </div>

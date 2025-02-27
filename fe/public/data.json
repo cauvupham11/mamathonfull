@@ -2,8 +2,8 @@
     "user": {
       "name": "kangourou",
       "level": 1,
-      "exp": 250,
-      "coin": 500
+      "exp": 0,
+      "coin": 200
     },
     "backpack": [
     {

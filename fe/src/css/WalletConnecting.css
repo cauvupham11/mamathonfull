@@ -1,3 +1,23 @@
+/* Shimmering (Glowing) Effect for the Logo */
+@keyframes shimmer {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(255, 118, 182, 1), 0 0 20px rgba(255, 118, 182, 0.8), 0 0 30px rgba(255, 118, 182, 0.6);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.4), 0 0 15px rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Apply the shimmer animation to the logo */
+.animate-logo {
+  animation: shimmer 2s ease-in-out infinite; /* 2 seconds duration, looping infinitely */
+  transition: text-shadow 0.5s ease-in-out; /* Smooth transition for text-shadow */
+  filter: brightness(1.2);
+}
+
 /* Hiệu ứng xuất hiện từ dưới lên */
 @keyframes slide-up {
   0% {
@@ -22,23 +42,13 @@
   }
 }
 
-/* Áp dụng hiệu ứng cho logo */
-.animate-logo {
-  animation: slide-up 0.9s ease-out;
-}
-
-/* Áp dụng hiệu ứng cho các nút */
-.animate-button {
-  animation: split 0.7s ease-out;
-}
-
-/* Container chính */
+/* Enhanced gradient background */
 .wallet-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(to bottom right, #1e1e2f, #2a2a42, #6a4ab1);
+  background: linear-gradient(135deg, #6a4ab1, #ff7eb3, #2a2a42); /* Add vibrant gradient */
   color: white;
 }
 
@@ -61,17 +71,46 @@
   margin-bottom: 0.5rem; /* Khoảng cách dưới logo */
 }
 
-/* Nút cơ bản */
+/* Apply shimmering border on hover */
 .wallet-button {
   width: 100%;
   padding: 1rem;
   font-size: 1.125rem;
   font-weight: bold;
-  border: none;
+  border: 2px solid transparent; /* Initially no border */
   border-radius: 0.5rem;
   cursor: pointer;
   transition: transform 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
+  background: linear-gradient(45deg, #ff7eb3, #6a4ab1); /* Gradient background */
+  color: white;
+  position: relative;
+  filter: brightness(1.1);
 }
+
+/* Shimmering border effect */
+@keyframes shimmering-border {
+  0% {
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff7eb3, 0 0 20px #ff7eb3, 0 0 25px #ff7eb3;
+  }
+  50% {
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #6a4ab1, 0 0 20px #6a4ab1, 0 0 25px #6a4ab1;
+  }
+  100% {
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff7eb3, 0 0 20px #ff7eb3, 0 0 25px #ff7eb3;
+  }
+}
+
+.wallet-button:hover {
+  background: linear-gradient(45deg, #6a4ab1, #ff7eb3); /* Reverse the gradient on hover */
+  box-shadow: 0 0 10px rgba(255, 118, 182, 0.8); /* Add a glow effect on hover */
+  animation: shimmering-border 1.5s infinite; /* Add shimmering border effect */
+  transform: scale(1.05);
+}
+
+.wallet-button:active {
+  transform: scale(0.95); /* Slight shrink effect when button is clicked */
+}
+
 /* Dòng chữ dưới logo */
 .wallet-text {
   font-size: 1.25rem; /* Kích thước chữ */
@@ -84,7 +123,12 @@
   animation: fade-in 1s ease-out; /* Hiệu ứng fade-in */
 }
 
-/* Nút connect */
+.wallet-button:disabled {
+  background-color: #7f8c8d;
+  color: white;
+  cursor: not-allowed;
+}
+
 .connect-button {
   background-color: #6b46c1;
   color: white;
@@ -114,6 +158,7 @@
   color: white;
   cursor: not-allowed;
 }
+
 @keyframes gradient-move {
   0% {
     background-position: 0% 50%;
@@ -138,6 +183,7 @@
   background-size: 400% 400%;
   animation: gradient-move 10s ease infinite;
 }
+
 /* Animation khi component xuất hiện */
 .slide-in {
   animation: fadeIn 0.8s ease-out forwards;
@@ -168,4 +214,30 @@
     opacity: 0;
     transform: translateY(50px);
   }
+}
+
+.wallet-type-switch {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.wallet-switch-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid #ff7eb3;
+  background-color: #2a2a42;
+  color: white;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.wallet-switch-button.active {
+  background-color: #ff7eb3;
+}
+
+.wallet-switch-button:hover {
+  background-color: #ff4c8f;
 }

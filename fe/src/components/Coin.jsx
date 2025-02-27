@@ -7,7 +7,7 @@ const Coin = () => {
         alt="Coin"
       />
       <span className="flex text-l bg-yellow-100 w-32 h-7 mx-2 mt-1 rounded-full pl-4">
-        1
+        1000
       </span>
     </div>
   );

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const AvatarStatus = () => {
-  const [currentExp, setCurrentExp] = useState(250);
+  const [currentExp, setCurrentExp] = useState(0);
   const [requiredExp, setRequiredExp] = useState(200);
   const [level, setLevel] = useState(1);
   const [showLevelUp, setShowLevelUp] = useState(false);

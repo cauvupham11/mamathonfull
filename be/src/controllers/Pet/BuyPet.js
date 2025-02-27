@@ -1,13 +1,11 @@
 const axios = require("axios");
 const { AppError, sendResponse } = require("../../helpers/utils");
-
-// Kiểm tra tính khả dụng của pet trên mạng Celestia và lấy giá từ metadata
 const checkPetOnCelestia = async (namespace_id, height) => {
   const payload = {
     id: 1,
     jsonrpc: "2.0",
     method: "share.SharesAvailable",
-    params: [height],  // Hoặc bạn có thể sử dụng txhash nếu cần
+    params: [height], 
   };
 
   try {
@@ -19,7 +17,6 @@ const checkPetOnCelestia = async (namespace_id, height) => {
     if (!sharesAvailable || sharesAvailable.length === 0) {
       throw new AppError("Pet not found on Celestia network", 404);
     }
-
     // Lấy metadata từ dữ liệu
     const metadata = sharesAvailable[0].data.metadata;
     if (!metadata || !metadata.price) {
@@ -29,15 +26,12 @@ const checkPetOnCelestia = async (namespace_id, height) => {
     // Ghi lại giá trị từ metadata và trả về
     console.log("Price from metadata:", metadata.price); // Log giá trị metadata
 
-    // Trả về giá trị price từ metadata
     return parseFloat(metadata.price);
   } catch (error) {
     console.error("Error checking pet on Celestia network", error);
     throw new AppError("Error checking pet on Celestia network", 500);
   }
 };
-
-// Kiểm tra số dư của người mua
 const checkBuyerBalance = async (buyer_address) => {
   const balanceResponse = await axios.post("http://localhost:26658", {
     id: 1,

@@ -80,7 +80,6 @@ const blobSubmitPet = async (req, res) => {
         },
       ],
     };
-
     const response = await axios.post("http://localhost:26658", payload, {
       headers: {
         "Content-Type": "application/json",

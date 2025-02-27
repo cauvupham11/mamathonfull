@@ -3,13 +3,12 @@ import Backpack from "./Backpack";
 import StoreUser from "./StoreUser";
 import Exchange from "./Exchange";
 import { FaStore, FaExchangeAlt } from "react-icons/fa";
-
+import { motion } from "framer-motion";
 const Menu = () => {
   const [isBackpackOpen, setBackpackOpen] = useState(false);
   const [isStoreOpen, setStoreOpen] = useState(false);
   const [isMissionOpen, setMissionOpen] = useState(false);
   const [isSpinOpen, setSpinOpen] = useState(false);
-
   const closeBackpack = () => setBackpackOpen(false);
   const openBackpack = () => setBackpackOpen(true);
 
@@ -23,166 +22,141 @@ const Menu = () => {
   const closeSpin = () => setSpinOpen(false);
 
   const items = Array.from({ length: 10 }, (_, index) => index + 1);
+  
 
   return (
-    <div className="flex flex-col ml-4 mt-14 space-y-1">
-      <div
-        className="flex flex-col py-2 w-fit hover:cursor-pointer"
-        onClick={openStore}
-      >
-        <img className="w-11 h-11" src="/src/assets/img/store.png" alt="Store" />
-        <span>Store</span>
-      </div>
-      <div
-        className="flex flex-col py-2 w-fit hover:cursor-pointer"
-        onClick={openBackpack}
-      >
-        <img
-          className="w-11 h-11"
-          src="/src/assets/img/military.png"
-          alt="Backpack"
-        />
-        <span>Backpack</span>
-      </div>
-      <div
-        className="flex flex-col py-2 w-fit hover:cursor-pointer"
-        onClick={openMission}
-      >
-        <img
-          className="w-11 h-11"
-          src="/src/assets/img/planner.png"
-          alt="Missions"
-        />
-        <span>Missions</span>
-      </div>
-      <div className="flex flex-col py-2 w-fit hover:cursor-pointer" onClick={openSpin}>
-        <img
-          className="w-11 h-11"
-          src="/src/assets/img/lottery.png"
-          alt="Lucky Spin"
-        />
-        <span>Good luck !!!!</span>
-      </div>
-      {isBackpackOpen && (
-        <Backpack closeBackpack={closeBackpack} items={items} />
-      )}
-
-      {/* Store Overlay */}
-      {isStoreOpen && <Store closeStore={closeStore} />}
-
-      {/* Missions Overlay */}
-      {isMissionOpen && <Missions closeMission={closeMission} />}
-
-      {/* Spin Overlay */}
-      {isSpinOpen && <LuckySpin closeSpin={closeSpin} />}
+    <div className="flex flex-col ml-4 mt-14 space-y-4">
+    <div
+      className="flex flex-col py-2 w-fit hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+      onClick={openStore}
+    >
+      <img className="w-11 h-11 object-contain transition-transform duration-300 ease-in-out" src="/src/assets/img/store.png" alt="Store" />
+      <span className="transition-opacity duration-300 ease-in-out opacity-75 hover:opacity-100">Store</span>
     </div>
+    <div
+      className="flex flex-col py-2 w-fit hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+      onClick={openBackpack}
+    >
+      <img className="w-11 h-11 object-contain transition-transform duration-300 ease-in-out" src="/src/assets/img/military.png" alt="Backpack" />
+      <span className="transition-opacity duration-300 ease-in-out opacity-75 hover:opacity-100">Backpack</span>
+    </div>
+    <div
+      className="flex flex-col py-2 w-fit hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+      onClick={openMission}
+    >
+      <img className="w-11 h-11 object-contain transition-transform duration-300 ease-in-out" src="/src/assets/img/planner.png" alt="Missions" />
+      <span className="transition-opacity duration-300 ease-in-out opacity-75 hover:opacity-100">Missions</span>
+    </div>
+    <div
+      className="flex flex-col py-2 w-fit hover:cursor-pointer hover:scale-110 transition-transform duration-300 ease-in-out"
+      onClick={openSpin}
+    >
+      <img className="w-11 h-11 object-contain transition-transform duration-300 ease-in-out" src="/src/assets/img/lottery.png" alt="Lucky Spin" />
+      <span className="transition-opacity duration-300 ease-in-out opacity-75 hover:opacity-100">Good luck !!!!</span>
+    </div>
+    {isBackpackOpen && (
+      <Backpack closeBackpack={closeBackpack} items={items} />
+    )}
+  
+    {/* Store Overlay */}
+    {isStoreOpen && <Store closeStore={closeStore} />}
+  
+    {/* Missions Overlay */}
+    {isMissionOpen && <Missions closeMission={closeMission} />}
+  
+    {/* Spin Overlay */}
+    {isSpinOpen && <LuckySpin closeSpin={closeSpin} />}
+  </div>
+  
   );
 };
-const LuckySpin = ({ closeSpin }) => {
+const LuckySpin = ({ segments = ["Prize 1", "Prize 2", "Prize 3", "Prize 4", "Prize 5"], closeSpin }) => {
+  const [spinDegree, setSpinDegree] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [spinStyle, setSpinStyle] = useState({});
-  const [selectedPrize, setSelectedPrize] = useState(null);
-  const [popupVisible, setPopupVisible] = useState(false);
 
-  const prizes = [
-    { id: 1, name: "100 Coins", color: "#db7093" },
-    { id: 2, name: "1 Coin", color: "#20b2aa" },
-    { id: 3, name: "50 Coins", color: "#d63e92" },
-    { id: 4, name: "Try Again", color: "#daa520" },
-    { id: 5, name: "1000 Coins", color: "#ff34f0" },
-    { id: 6, name: "10 Coins", color: "#ff7f50" },
-    { id: 7, name: "5 Coins", color: "#3cb371" },
-    { id: 8, name: "20 Coins", color: "#4169e1" },
-  ];
-
-  const startSpin = () => {
-    if (isSpinning) return;
-
+  const handleSpin = () => {
+    if (isSpinning) return; // Prevent spinning while it's spinning
     setIsSpinning(true);
-    setSelectedPrize(null);
+    const randomDegree = Math.floor(Math.random() * 360) + 720; // Spin at least 2 full rounds
+    setSpinDegree(randomDegree);
 
-    const randomIndex = Math.floor(Math.random() * prizes.length);
-    const randomDegree = 360 * 5 + (360 / prizes.length) * randomIndex;
-
-    setSpinStyle({
-      transform: `rotate(${randomDegree}deg)`,
-      transition: "transform 4s cubic-bezier(0.1, 0.8, 0.1, 1)",
-    });
-
+    // Reset the spinning state after the animation is done
     setTimeout(() => {
       setIsSpinning(false);
-      setSelectedPrize(prizes[randomIndex]);
-      setPopupVisible(true);
-    }, 4000);
+    }, 3000); // Match this time with the animation duration
+  };
+
+  // Create a conic gradient for background slices
+  const generateGradient = () => {
+    const sliceAngle = 100 / segments.length;
+    let gradient = "";
+    const colors = [
+      "#FF5733", "#33FF57", "#3357FF", "#FF33A8", "#FF8C33",
+    ];
+    segments.forEach((_, index) => {
+      gradient += `${colors[index % colors.length]} ${sliceAngle * index}% ${sliceAngle * (index + 1)}%, `;
+    });
+    return `conic-gradient(${gradient.trim().slice(0, -1)})`;
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-3/5 bg-white rounded-xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800">🎡 Lucky Spin</h1>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700" onClick={closeSpin}>
-            ❌ Close
-          </button>
-        </div>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="w-4/5 md:w-3/5 lg:w-1/2 h-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-2xl p-8 relative transform transition-transform duration-500 ease-in-out hover:scale-105">
+        {/* Close button */}
+        <button
+          onClick={closeSpin}
+          className="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+        >
+          ❌ Close
+        </button>
 
-        {/* Spin Wheel */}
-        <div className="relative w-80 h-80 mx-auto">
-          <div className="absolute w-full h-full rounded-full border-4 border-gray-300 shadow-lg" style={spinStyle}>
-            {prizes.map((item, index) => (
+        {/* The spinning wheel */}
+        <div
+          className="relative w-64 h-64 border-8 border-solid border-gray-800 rounded-full flex justify-center items-center"
+          style={{
+            transform: `rotate(${spinDegree}deg)`,
+            transition: "transform 3s ease-out",
+            background: generateGradient(), // Apply conic gradient to create the slices
+          }}
+        >
+          {/* Place labels inside each slice */}
+          {segments.map((segment, index) => {
+            const angle = (index * 360) / segments.length; // Calculate angle for each segment
+            return (
               <div
-                key={item.id}
-                className="absolute w-full h-full"
+              key={index}
+              className="absolute top-0 left-0 flex justify-center items-center w-full h-full"
+              style={{
+                transform: `rotate(${angle}deg)`,
+                transition: "transform 3s ease-out",
+                transformOrigin: "50% 1000%", // Rotate from the right edge
+              }}
+              >
+              <div
+                className="absolute w-1/2 h-1/2 flex justify-center items-center text-white font-semibold"
                 style={{
-                  transform: `rotate(${(360 / prizes.length) * index}deg)`,
-                  clipPath: "polygon(50% 50%, 100% 0, 0 0)",
-                  backgroundColor: item.color,
+                transform: `rotate(${-(angle)}deg)`, // Correct label orientation
                 }}
               >
-                <div
-                  className="absolute w-full h-full flex justify-center items-center text-center"
-                  style={{
-                    transform: `rotate(-${(360 / prizes.length) * index}deg)`,
-                  }}
-                >
-                  <span className="text-xs font-bold text-white">{item.name}</span>
-                </div>
+                {segment}
               </div>
-            ))}
-          </div>
-
-          {/* Spin Pointer */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-6 bg-red-600 shadow-lg rounded-full"></div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Spin Button */}
         <button
-          className={`mt-6 px-6 py-3 text-lg text-white rounded-lg ${isSpinning ? "bg-gray-500" : "bg-green-500 hover:bg-green-700"}`}
-          onClick={startSpin}
-          disabled={isSpinning}
+          onClick={handleSpin}
+          className="px-6 py-3 bg-pink-500 text-white font-bold rounded-full shadow-md hover:bg-pink-600 transition-all duration-300 mt-4"
         >
-          {isSpinning ? "Spinning..." : "Start Spin"}
+          Spin the Wheel
         </button>
       </div>
-
-      {/* Popup Message */}
-      {popupVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <h2 className="text-2xl font-bold text-gray-800">🎉 Congratulations!</h2>
-            <p className="mt-2 text-lg">{selectedPrize.name}</p>
-            <button
-              className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
-              onClick={() => setPopupVisible(false)}
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
+
 const Missions = ({ closeMission }) => {
   const [missions, setMissions] = useState([
     { id: 1, title: "Feed Your Goat", reward: 10, completed: false },
@@ -200,47 +174,46 @@ const Missions = ({ closeMission }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-2/5 bg-white rounded-xl shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800">📜 Missions</h1>
-          <button
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
-            onClick={closeMission}
+    <div className="w-2/5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg p-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold text-white">📜 Missions</h1>
+        <button
+          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300"
+          onClick={closeMission}
+        >
+          ❌ Close
+        </button>
+      </div>
+  
+      <div className="space-y-4">
+        {missions.map((mission) => (
+          <motion.div
+            key={mission.id}
+            className={`p-4 border rounded-lg shadow-md flex justify-between items-center ${mission.completed ? "bg-green-200" : "bg-gray-100"}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
           >
-            ❌ Close
-          </button>
-        </div>
-
-        <div className="space-y-4">
-          {missions.map((mission) => (
-            <div
-              key={mission.id}
-              className={`p-4 border rounded-lg shadow-md flex justify-between items-center ${
-                mission.completed ? "bg-green-200" : "bg-gray-100"
-              }`}
-            >
-              <div>
-                <h3 className="text-xl font-semibold">
-                  {mission.title} {mission.completed ? "✔" : ""}
-                </h3>
-                <p className="text-gray-600">Reward: {mission.reward} Coins</p>
-              </div>
-              <button
-                className={`px-4 py-2 text-white rounded-lg ${
-                  mission.completed
-                    ? "bg-gray-500"
-                    : "bg-blue-500 hover:bg-blue-700"
-                }`}
-                onClick={() => completeMission(mission.id)}
-                disabled={mission.completed}
-              >
-                {mission.completed ? "Completed" : "Not Completed"}
-              </button>
+            <div>
+              <h3 className="text-xl font-semibold">
+                {mission.title} {mission.completed ? "✔" : ""}
+              </h3>
+              <p className="text-gray-600">Reward: {mission.reward} Coins</p>
             </div>
-          ))}
-        </div>
+            <button
+              className={`px-4 py-2 text-white rounded-lg ${
+                mission.completed ? "bg-gray-500" : "bg-blue-500 hover:bg-blue-700"
+              }`}
+              onClick={() => completeMission(mission.id)}
+              disabled={mission.completed}
+            >
+              {mission.completed ? "Completed" : "Not Completed"}
+            </button>
+          </motion.div>
+        ))}
       </div>
     </div>
+  </div>
   );
 };
 
@@ -260,62 +233,63 @@ const Store = ({ closeStore }) => {
   ];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="w-3/5 h-auto bg-white rounded-xl shadow-lg p-6 relative">
-        
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">🐐 Pet Store</h1>
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700 transition" onClick={closeStore}>
-            ❌ Close
-          </button>
-        </div>
-
-        {/* Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
-          {itemsForUsers.map((item) => (
-            <div key={item.id} className="p-6 border rounded-lg shadow-lg hover:shadow-xl transition flex flex-col items-center">
-              <img src={item.image} alt={item.name} className="w-40 h-40 object-cover rounded-lg" />
-              <h3 className="text-2xl font-semibold mt-3">{item.name}</h3>
-              <p className="text-gray-700 text-lg">{item.price} Coins</p>
-              <button className="mt-4 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-700 text-lg transition">
-                Buy
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
-          
-          {/* Store User Button */}
-          <button
-            className="w-full md:w-1/2 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:scale-105 transition"
-            onClick={() => setStoreUserOpen(true)}
-          >
-            <FaStore className="text-xl" />
-            Open Store User
-          </button>
-
-          {/* Exchange Button */}
-          <button
-            className="w-full md:w-1/2 px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:scale-105 transition"
-            onClick={() => setExchangeOpen(true)}
-          >
-            <FaExchangeAlt className="text-xl" />
-            Open Exchange
-          </button>
-        </div>
-      </div>
-
-      {/* Show StoreUser when button clicked */}
-      {isStoreUserOpen && (
-        <StoreUser closeStore={() => setStoreUserOpen(false)} itemsForUsers={itemsForUsers} marketplaceItems={marketplaceItems} />
-      )}
-
-      {/* Show Exchange when button clicked */}
-      {isExchangeOpen && <Exchange closeExchange={() => setExchangeOpen(false)} />}
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div className="w-4/5 md:w-3/5 lg:w-1/2 h-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-2xl p-8 relative transform transition-transform duration-500 ease-in-out hover:scale-105">
+    
+    {/* Header */}
+    <div className="flex justify-between items-center mb-8">
+      <h1 className="text-4xl font-extrabold text-white animate__animated animate__fadeIn">🐐 Pet Store</h1>
+      <button className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-700 transition-all duration-300" onClick={closeStore}>
+        ❌ Close
+      </button>
     </div>
+
+    {/* Items Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
+      {itemsForUsers.map((item) => (
+        <div key={item.id} className="p-6 border border-white rounded-lg shadow-lg hover:shadow-xl transform transition duration-300 hover:scale-105 flex flex-col items-center bg-white bg-opacity-80">
+          <img src={item.image} alt={item.name} className="w-40 h-40 object-cover rounded-lg mb-4 transition-all duration-300 hover:scale-110" />
+          <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
+          <p className="text-gray-600 text-lg mb-4">{item.price} Coins</p>
+          <button className="mt-4 px-6 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white rounded-lg shadow-md hover:scale-105 transition-all duration-300">
+            Buy
+          </button>
+        </div>
+      ))}
+    </div>
+
+    {/* Action Buttons */}
+    <div className="flex flex-col md:flex-row justify-between gap-4 mt-8">
+      {/* Store User Button */}
+      <button
+        className="w-full md:w-1/2 px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:scale-105 transform transition duration-300"
+        onClick={() => setStoreUserOpen(true)}
+      >
+        <FaStore className="text-xl" />
+        Open Store User
+      </button>
+
+      {/* Exchange Button */}
+      <button
+        className="w-full md:w-1/2 px-6 py-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 hover:scale-105 transform transition duration-300"
+        onClick={() => setExchangeOpen(true)}
+      >
+        <FaExchangeAlt className="text-xl" />
+        Open Exchange
+      </button>
+    </div>
+  </div>
+
+  {/* Show StoreUser when button clicked */}
+  {isStoreUserOpen && (
+    <StoreUser closeStore={() => setStoreUserOpen(false)} itemsForUsers={itemsForUsers} marketplaceItems={marketplaceItems} />
+  )}
+
+  {/* Show Exchange when button clicked */}
+  {isExchangeOpen && <Exchange closeExchange={() => setExchangeOpen(false)} />}
+</div>
+
+  
   );
 };
 export default Menu;
