@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -12,5 +11,10 @@ export default defineConfig({
     alias: {
       three: "three",
     },
+  },
+  base: "./", // Hoặc "/your-repo-name/" nếu deploy vào một subdirectory
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
   },
 });
