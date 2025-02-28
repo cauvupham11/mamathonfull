@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate từ react
 import '../css/StartPage.css';
 
 // Import video từ thư mục assets
-import introVideo from '../assets/intro.mp4';
+import introVideo from '../video/intro.mp4';
 
 const StartPage = () => {
   const [isVideoEnded, setIsVideoEnded] = useState(false);
